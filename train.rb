@@ -32,25 +32,29 @@ class Route
     stations.insert(-2, station)
   end
 
-  def remove_station(station)
-    stations.delete(station)
+  def remove_station(station) # удаление промежуточной станции
+    stations.delete(-2, station)
+  end
+  
+  def first_station
+    stations.first
+  end
+
+  def last_station
+    stations.last
   end
   
 
 end
 
 class Train
-  attr_reader :type, :wagons, :route
+  attr_reader :type, :wagons, :route, :current_speed
 
   def initialize(number, type, wagons)
     @number = number
     @type = type
     @wagons = wagons
     @speed = 0
-  end
-
-  def current_speed
-    @speed
   end
 
   def increase_speed(power) # увеличение скорости
@@ -80,6 +84,7 @@ class Train
   def route=(route)
     @route = route
     @current_station_index = 0
+    current_station.receive_train(self)
   end
 
   def current_stations
@@ -91,15 +96,27 @@ class Train
   end
 
   def previous_stations
-    route.stations[@current_station_index - 1]
+    if @current_station_index > 0
+      route.stations[@current_station_index - 1]
+    end
   end
 
   def go_forward
-    self.current_station_index += 1
+    if current_station && next_station
+      current_station.send_train(self)
+      @current_station_index += 1
+      current_station.receive_train(self)
+      
+    end
   end
 
   def go_backward
-    self.current_station_index -= 1
+    if current_station && previous_station
+      current_station.send_train(self)
+      @current_station_index -= 1
+      current_station.receive_train(self)
+      
+    end
   end
 
 end
