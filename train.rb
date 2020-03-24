@@ -33,7 +33,9 @@ class Route
   end
 
   def remove_station(station) # удаление промежуточной станции
-    stations.delete(-2, station)
+    unless [@stations[0], @stations[-1]].include?(station)
+      @stations.delete(station)
+    end
   end
   
   def first_station
@@ -42,6 +44,10 @@ class Route
 
   def last_station
     stations.last
+  end
+  
+  def show_stations(stations)
+    @stations.each { |stations| puts stations }
   end
   
 
